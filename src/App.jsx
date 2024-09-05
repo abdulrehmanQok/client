@@ -11,7 +11,6 @@ const App = () => {
   return (
     <div>
 <Layout>
-<Navbar/>
 <Routes>
 <Route path='/' element={<Landingpage/>}></Route>
 <Route path='/login' element={<Login/>}></Route>
