@@ -9,21 +9,22 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Profile from './components/Profile'
 import Product from './pages/Product'
-import ProductDeatil from './pages/ProductDeatil'
+import Dashboard from './components/Dashboard'
+import { userStore } from './store/userStore'
+
+
 const App = () => {
+ const {user}= userStore();
   return (
     <div>
-<Layout>
 <Routes>
-<Route path='/' element={<Landingpage/>}></Route>
-<Route path='/login' element={<Login/>}></Route>
-<Route path='/register' element={<Register/>}></Route>
-<Route path='/profile' element={<Profile/>}></Route>
-<Route path='/product' element={<Product/>}></Route>
-<Route path='/product/:id' element={<ProductDeatil/>}></Route>
-
+  <Route path="/" element={<Landingpage />} />
+  <Route path="/login" element={<Login/> ? "/" :"/login"} />
+  <Route path="/register" element={<Register/> ? "/login" :"/register"} />
+  {/* <Route path="/profile" element={<Layout><Profile /></Layout>} /> */}
+  <Route path="/" element={ user !== "admin" ? "/" : <Dashboard/>  }/>
+  <Route path="/product" element={<Layout><Product /></Layout>} />
 </Routes>
-</Layout>
 <ToastContainer/>
     </div>
   )

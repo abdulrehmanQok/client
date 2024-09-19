@@ -1,63 +1,101 @@
-import React, { useEffect, useState } from 'react'; // Added useState import
-import axios from 'axios'; // Import axios for API requests
-import { toast } from 'react-toastify'; // Import toast for notifications
+import axios from 'axios';
+import React from 'react'
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify';
+import { userStore } from '../store/userStore';
 
-const Profile = () => {
-  const [user, setUser] = useState([]); // Initialize state for user data
-
-  const getdata = async () => { // Made function async
-    try {
-      let response = await axios.get("http://localhost:8000/api/getuser"); // Await the axios call
-      if (response) {
-        console.log(response);
-        setUser(response.data.detail); // Set user data correctly
-        toast.success('Data fetched successfully!'); // Toast message on success
-      }
-    } catch (error) {
-      console.log("Failed to fetch data", error);
-      toast.error('Failed to fetch data'); // Toast message on error
-    }
-  };
-
-  useEffect(() => {
-    getdata(); // Fetch data when the component mounts
-  }, []);
-
+const Login = () => {
+  const {login}= userStore();
+  const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   return (
-    <div>
-    <h1 className="text-2xl font-bold text-center my-20">User Profile</h1>
-    <table className="table-auto border-collapse border border-slate-400 text-center m-auto my-20 w-[80%] rounded">
-        <thead>
-          <tr className="text-xl font-semibold">
-            <th className="border-collapse border border-slate-400">Name</th>
-            <th className="border-collapse border border-slate-400">Email</th>
-            <th className="border-collapse border border-slate-400">Add</th>
-            <th className="border-collapse border border-slate-400">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {user.length === 0 ? ( // Corrected condition to check empty array
-            <tr>
-              <td colSpan="4">Loader...</td> {/* Properly spans all columns */}
-            </tr>
-          ) : (
-            user.map((x, i) => (
-              <tr key={i}>
-                <td className="border border-slate-300">{x.name}</td>
-                <td className="border border-slate-300">{x.email}</td>
-                <td className="border border-slate-300">
-                  <button onClick={() => addUser(x)}>Add</button> {/* Changed to Add button */}
-                </td>
-                <td className="border border-slate-300">
-                  <button onClick={() => deleteUser(x)}>Delete</button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        
+            <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          Sign_Up
+            </h2>
+          </div>
+  
+          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmit((data)=>{
+            const {email, password}= data;
+           login({
+             email,
+             password
+            })
+ 
+    
+            //  window.location.href = '/login'
+            navigate('/')
+            } )} >
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+               Email
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="email"
+                    {...register('email', {required:"please provide valid email"})}
+                    type="email"
+                    autoComplete="email"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+                <div >   {errors.email && <p className='text-red-500'>Email is required.</p>}</div>
+              </div>
+  
+              <div>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                    Password
+                  </label>
+                  <div className="text-sm">
+                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                      Forgot password?
+                    </a>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <input
+                    id="password"
+                    {...register('password',{required:"true"})}
+                    type="password"
+            
+                    autoComplete="current-password"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+                <div className='my-2'>{errors.password && <p className='text-red-500'>Password is required.</p>}</div>
+                <div className="text-sm">
+                if you don't have account ?
+                    <Link to="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                    Sign_Up
+                    </Link>
+                  </div>
+              </div>
+  
+              <div>
+                <button
+                  type="submit"
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Sign in
+                </button>
+              </div>
+            </form>
+  
+       
+          </div>
+        </div>
+   
+  )
+}
 
-export default Profile;
+export default Login
+

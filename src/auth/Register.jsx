@@ -3,6 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { userStore } from "../store/userStore";
 const Register = () => {
   const navigate = useNavigate();
   const {
@@ -10,7 +11,7 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  
+  const {signup}= userStore();
   return (
     <div>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -21,17 +22,13 @@ const Register = () => {
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmit((detail)=>{
-            axios.post('http://localhost:8000/api/register',detail)
-           .then(res=>{
-             toast.success('User registered successfully')
-             console.log(res)
-            //  window.location.href = '/login'
+            const {name,email, password}= detail;
+            signup({
+              name,
+              email,
+              password
+            })
             navigate('/login')
-           }).catch(()=>{
-             toast.error('Failed to register user')
-             console.log(res)
- 
-           })
           })}>
             <div>
               <label
