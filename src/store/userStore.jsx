@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axoisins from "../lib/axios";
 import { toast } from "react-toastify";
+import { get } from "react-hook-form";
 
 
 export const userStore = create((set,get)=>({
@@ -42,14 +43,35 @@ try {
     
 }
    },
-//    checkAuth:async()=>{
-//     set({checkingAuth:true})
-//     try {
-//         const res = await axoisins.get("/checkauth")
-//         set({user:res.data,checkingAuth:false})
-//     } catch (error) {
-//         set({checkingAuth:false})
+   checkAuth:async()=>{
+    set({checkAuth:true})
+    try {
+        const response = await axoisins.get("/auth/profile")
+        set({user:res.data,checkingAuth:false})
+    } catch (error) {
+        set({checkingAuth:false})
         
-//     }
-// }
+    }
+},
+refreshtoken:async()=>{
+    if(get().checkAuth) return;
+    set({checkAuth:True})
+    try {
+        const response = await axoisins.post("/auth/refreshtoken")
+        set({user:response.data,checkAuth:false})
+    } catch (error) {
+        toast.error("failed to refresh token")
+    }
+}
 }))
+let refreshtoken=null;
+axoisins.interceptors.response.use(
+    (response)=>response,
+    async(error)=>{
+        if(error.response.status === 401 && get().checkAuth){
+            await get().refreshtoken
+            return axoisins(error.config);
+        }
+        return Promise.reject(error);
+    }
+)
